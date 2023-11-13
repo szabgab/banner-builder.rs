@@ -30,7 +30,7 @@ jobs:
 
     - name: Environment
       run: |
-        locate "*.ttf"
+        #locate "*.ttf"
         ls -l /usr/share/fonts/
         tree /usr/share/fonts/truetype/
 
