@@ -28,6 +28,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Environment
+      run: |
+        locate "*.ttf"
+        ls -l /usr/share/fonts/
+        tree /usr/share/fonts/truetype/
+
     - name: Build debug version
       run: cargo build --verbose
 
