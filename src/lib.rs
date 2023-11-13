@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use image::{Rgb, RgbImage};
 use imageproc::drawing::{draw_text_mut, text_size};
 use rusttype::{Font, Scale};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Banner {
@@ -11,7 +11,6 @@ pub struct Banner {
     height: u32,
     text: String,
 }
-
 
 pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     let limit = 40;
@@ -29,7 +28,9 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     }
 
     //let font = Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf") as &[u8]);
-    let font = Vec::from(include_bytes!("/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf") as &[u8]);
+    let font = Vec::from(include_bytes!(
+        "/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+    ) as &[u8]);
     let font = Font::try_from_vec(font).unwrap();
 
     let intended_text_height = 24.4;
@@ -64,4 +65,3 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
 
     true
 }
-

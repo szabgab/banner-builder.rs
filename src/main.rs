@@ -1,4 +1,3 @@
-
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
@@ -7,9 +6,7 @@ fn main() {
     }
     let yaml_file = &args[1];
     let banner: banner_builder::Banner = match std::fs::File::open(yaml_file) {
-        Ok(file) => {
-            serde_yaml::from_reader(file).unwrap()
-        }
+        Ok(file) => serde_yaml::from_reader(file).unwrap(),
         Err(error) => {
             eprintln!("Could not open file '{yaml_file}', error: {error}");
             std::process::exit(1);
