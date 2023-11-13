@@ -47,7 +47,7 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     // get the size of the text and calculate the x, y coordinate where to start to be center aligned
     // both horizontally and vertically
     let (text_width, text_height) = text_size(scale, &font, &banner.text);
-    println!("Text size: {}x{}", text_width, text_height);
+    //println!("Text size: {}x{}", text_width, text_height);
     let text_start_x = ((banner.width - text_width as u32) / 2) as i32;
     let text_start_y = ((banner.height - text_height as u32) / 2) as i32;
 

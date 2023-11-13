@@ -11,6 +11,12 @@ mod tests {
         assert_eq!(stdout, "");
         assert!(stderr
             .contains("Could not open file 'hello_world.yaml', error: No such file or directory"));
+
+        let (exit, stdout, _stderr) =
+            run("cargo run --bin babu examples/hello_world.yaml hello_world.png");
+        assert_eq!(exit, 0);
+        assert_eq!(stdout, "");
+        //assert_eq!(stderr, "");
     }
 }
 
