@@ -3,21 +3,27 @@ use std::path::PathBuf;
 use image::{Rgb, RgbImage};
 use imageproc::drawing::{draw_text_mut, text_size};
 use rusttype::{Font, Scale};
+use serde::{Serialize, Deserialize};
 
-pub fn draw_image(path: &PathBuf, text: &str) -> bool {
-    let width = 1000;
-    let height = 500;
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Banner {
+    width: u32,
+    height: u32,
+    text: String,
+}
 
+
+pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     let limit = 40;
-    if text.len() > limit {
+    if banner.text.len() > limit {
         return false;
     }
 
     // create image
-    let mut image = RgbImage::new(width, height);
+    let mut image = RgbImage::new(banner.width, banner.height);
     // set white background
-    for x in 0..width {
-        for y in 0..height {
+    for x in 0..banner.width {
+        for y in 0..banner.height {
             *image.get_pixel_mut(x, y) = image::Rgb([255, 255, 255]);
         }
     }
@@ -39,10 +45,10 @@ pub fn draw_image(path: &PathBuf, text: &str) -> bool {
 
     // get the size of the text and calculate the x, y coordinate where to start to be center aligned
     // both horizontally and vertically
-    let (text_width, text_height) = text_size(scale, &font, text);
+    let (text_width, text_height) = text_size(scale, &font, &banner.text);
     println!("Text size: {}x{}", text_width, text_height);
-    let text_start_x = ((width - text_width as u32) / 2) as i32;
-    let text_start_y = ((height - text_height as u32) / 2) as i32;
+    let text_start_x = ((banner.width - text_width as u32) / 2) as i32;
+    let text_start_y = ((banner.height - text_height as u32) / 2) as i32;
 
     draw_text_mut(
         &mut image,
@@ -51,12 +57,11 @@ pub fn draw_image(path: &PathBuf, text: &str) -> bool {
         text_start_y,
         scale,
         &font,
-        text,
+        &banner.text,
     );
 
     image.save(path).unwrap();
 
     true
 }
-
 
