@@ -27,10 +27,9 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
         }
     }
 
-    //let font = Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf") as &[u8]);
-    let font = Vec::from(include_bytes!(
-        "/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
-    ) as &[u8]);
+    //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
+    let font =
+        Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") as &[u8]);
     let font = Font::try_from_vec(font).unwrap();
 
     let intended_text_height = 24.4;
