@@ -10,6 +10,13 @@ pub struct Banner {
     width: u32,
     height: u32,
     text: String,
+
+    #[serde(default = "default_white")]
+    background_color: String,
+}
+
+fn default_white() -> String {
+    "#FFFFFF".to_string()
 }
 
 pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
@@ -20,10 +27,13 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
 
     // create image
     let mut image = RgbImage::new(banner.width, banner.height);
-    // set white background
+    // set background color
+    let (red, green, blue) = (255, 255, 255);
+    //banner.background_color[1..2]
+
     for x in 0..banner.width {
         for y in 0..banner.height {
-            *image.get_pixel_mut(x, y) = image::Rgb([255, 255, 255]);
+            *image.get_pixel_mut(x, y) = image::Rgb([red, green, blue]);
         }
     }
 

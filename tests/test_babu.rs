@@ -5,18 +5,30 @@ mod tests {
     use super::run;
 
     #[test]
-    fn test_babu() {
+    fn test_babu_missing() {
         let (exit, stdout, stderr) = run("cargo run --bin babu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
         assert_eq!(stdout, "");
         assert!(stderr
             .contains("Could not open file 'hello_world.yaml', error: No such file or directory"));
+    }
 
-        let (exit, stdout, _stderr) =
-            run("cargo run --bin babu examples/hello_world.yaml hello_world.png");
-        assert_eq!(exit, 0);
-        assert_eq!(stdout, "");
-        //assert_eq!(stderr, "");
+    #[test]
+    fn test_babu() {
+        for name in ["hello_world", "youtube_thumbnail_text_background"] {
+            let cmd = format!("target/debug/babu examples/{}.yaml test.png", name);
+            println!("{}", cmd);
+            let (exit, stdout, stderr) = run(&cmd);
+            assert_eq!(stderr, "");
+            assert_eq!(stdout, "");
+            assert_eq!(exit, 0);
+
+            let (exit, stdout, stderr) =
+                run(format!("diff examples/{}.png test.png", name).as_str());
+            assert_eq!(exit, 0);
+            assert_eq!(stdout, "");
+            assert_eq!(stderr, "");
+        }
     }
 }
 
@@ -25,6 +37,8 @@ fn run(command: &str) -> (i32, String, String) {
 
     let cmd = &parts[0];
     let args = &parts[1..parts.len()];
+    println!("cmd:  '{}'", cmd);
+    println!("args: '{:?}'", args);
 
     let result = Command::new(cmd)
         .args(args)

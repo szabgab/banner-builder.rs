@@ -6,7 +6,13 @@ fn main() {
     }
     let yaml_file = &args[1];
     let banner: banner_builder::Banner = match std::fs::File::open(yaml_file) {
-        Ok(file) => serde_yaml::from_reader(file).unwrap(),
+        Ok(file) => match serde_yaml::from_reader(file) {
+            Ok(content) => content,
+            Err(error) => {
+                eprintln!("Error parsing '{yaml_file}', error: {error}");
+                std::process::exit(1);
+            }
+        },
         Err(error) => {
             eprintln!("Could not open file '{yaml_file}', error: {error}");
             std::process::exit(1);
