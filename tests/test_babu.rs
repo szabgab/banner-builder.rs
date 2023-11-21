@@ -16,7 +16,7 @@ mod tests {
     #[test]
     fn test_babu() {
         for name in ["hello_world", "youtube_thumbnail_text_background"] {
-            let cmd = format!("target/debug/babu examples/{}.yaml test.png", name);
+            let cmd = format!("target/debug/babu site/examples/{}.yaml test.png", name);
             println!("{}", cmd);
             let (exit, stdout, stderr) = run(&cmd);
             assert_eq!(stderr, "");
@@ -24,7 +24,7 @@ mod tests {
             assert_eq!(exit, 0);
 
             let (exit, stdout, stderr) =
-                run(format!("diff examples/{}.png test.png", name).as_str());
+                run(format!("diff site/examples/{}.png test.png", name).as_str());
             assert_eq!(exit, 0);
             assert_eq!(stdout, "");
             assert_eq!(stderr, "");

@@ -4,5 +4,7 @@ timestamp: 2023-11-21T17:30:01
 description: Generating images from a config file
 ---
 
-# BaBu, the Banner Builder
 
+
+![](site/examples/hello_world.yaml)
+![](site/examples/hello_world.png)

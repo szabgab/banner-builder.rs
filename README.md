@@ -2,7 +2,7 @@
 
 
 ```
-cargo run --bin babu examples/hello_world.yaml hello_world.png
+cargo run --bin babu site/examples/hello_world.yaml hello_world.png
 ```
 
 
