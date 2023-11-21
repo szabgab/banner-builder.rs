@@ -57,7 +57,7 @@ jobs:
 
     - name: Generate pages
       run: |
-        ./code-maven-web --root . --outdir _site
+        ./code-maven-web --root site --outdir _site
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
