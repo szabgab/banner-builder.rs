@@ -16,7 +16,7 @@ pub struct Banner {
 }
 
 fn default_white() -> String {
-    "#FFFFFF".to_string()
+    "FFFFFF".to_string()
 }
 
 pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
@@ -28,8 +28,9 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     // create image
     let mut image = RgbImage::new(banner.width, banner.height);
     // set background color
-    let (red, green, blue) = (255, 255, 255);
-    //banner.background_color[1..2]
+    let red = u8::from_str_radix(&banner.background_color[0..=1], 16).unwrap();
+    let green = u8::from_str_radix(&banner.background_color[2..=3], 16).unwrap();
+    let blue = u8::from_str_radix(&banner.background_color[4..=5], 16).unwrap();
 
     for x in 0..banner.width {
         for y in 0..banner.height {
