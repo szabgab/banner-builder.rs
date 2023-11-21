@@ -1,0 +1,23 @@
+url: https://babu.rust.code-maven.com
+repo: https://github.com/szabgab/banner-builder.rs
+branch: main
+site_name: Banner Builder
+link_to_source: true
+footer: The [Banner Builder](https://github.com/szabgab/banner-builder.rs).
+tags:
+  title: Tags
+  description: Banner Builder
+from:
+  name: Gabor Szabo
+  email: gabor@szabgab.com
+archive:
+  title: Archive
+  description: List of all the articles about the BaBu
+navbar:
+  start:
+    - path: /
+      title: Home
+  end:
+    - path: /about
+      title: About
+
