@@ -1,0 +1,10 @@
+---
+width: 1280
+height: 720
+background_color: 66b04f
+elements:
+  - text: Some text
+    rtl: false
+    size: 80
+    xy: 50, 40
+
