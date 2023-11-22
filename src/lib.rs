@@ -20,7 +20,7 @@ fn default_white() -> String {
 }
 
 pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
-    let limit = 40;
+    let limit = 90;
     if banner.text.len() > limit {
         return false;
     }
@@ -56,20 +56,31 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
 
     // get the size of the text and calculate the x, y coordinate where to start to be center aligned
     // both horizontally and vertically
-    let (text_width, text_height) = text_size(scale, &font, &banner.text);
-    //println!("Text size: {}x{}", text_width, text_height);
-    let text_start_x = ((banner.width - text_width as u32) / 2) as i32;
-    let text_start_y = ((banner.height - text_height as u32) / 2) as i32;
+    let width = 30;
+    let lines = textwrap::wrap(&banner.text, width);
+    let padding: u32 = 10;
+    let (_text_width, text_height) = text_size(scale, &font, &banner.text);
+    let line_height = padding + text_height as u32;
+    let start_row = (banner.height / 2) - line_height * (lines.len() as u32) / 2;
+    //println!("start_row: {}", start_row);
 
-    draw_text_mut(
-        &mut image,
-        Rgb([red, green, blue]),
-        text_start_x,
-        text_start_y,
-        scale,
-        &font,
-        &banner.text,
-    );
+    for (idx, line) in lines.iter().enumerate() {
+        let (text_width, _text_height) = text_size(scale, &font, line);
+        //println!("Text size: {}x{}", text_width, text_height);
+        //println!("banner width: {}  text width: {}", banner.width, text_width);
+        let text_start_x = (banner.width - text_width as u32) / 2;
+        let text_start_y = start_row + (idx as u32) * line_height;
+
+        draw_text_mut(
+            &mut image,
+            Rgb([red, green, blue]),
+            text_start_x as i32,
+            text_start_y as i32,
+            scale,
+            &font,
+            line,
+        );
+    }
 
     image.save(path).unwrap();
 

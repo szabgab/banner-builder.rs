@@ -1,0 +1,5 @@
+---
+width: 640
+height: 360
+text: This text should be way too long to display in one line, so it needs to be wrapped
+background_color: 37c859

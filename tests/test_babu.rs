@@ -15,7 +15,11 @@ mod tests {
 
     #[test]
     fn test_babu() {
-        for name in ["hello_world", "youtube_thumbnail_text_background"] {
+        for name in [
+            "hello_world",
+            "youtube_thumbnail_text_background",
+            "wrap_text",
+        ] {
             let cmd = format!("target/debug/babu site/examples/{}.yaml test.png", name);
             println!("{}", cmd);
             let (exit, stdout, stderr) = run(&cmd);
