@@ -86,3 +86,20 @@ pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
 
     true
 }
+
+pub fn read_yaml_file(yaml_file: &String) -> Banner {
+    let banner: Banner = match std::fs::File::open(yaml_file) {
+        Ok(file) => match serde_yaml::from_reader(file) {
+            Ok(content) => content,
+            Err(error) => {
+                eprintln!("Error parsing '{yaml_file}', error: {error}");
+                std::process::exit(1);
+            }
+        },
+        Err(error) => {
+            eprintln!("Could not open file '{yaml_file}', error: {error}");
+            std::process::exit(1);
+        }
+    };
+    banner
+}
