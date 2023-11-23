@@ -25,3 +25,9 @@ There is a way to use this as a command line tool:
 
 ![](examples/youtube_thumbnail_text_background.yaml)
 ![](examples/youtube_thumbnail_text_background.png)
+
+
+### Wrap long text
+
+![](examples/wrap_text.yaml)
+![](examples/wrap_text.png)
