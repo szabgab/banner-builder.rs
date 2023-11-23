@@ -5,9 +5,9 @@ fn main() {
         std::process::exit(1);
     }
     let yaml_file = &args[1];
-    let banner = read_yaml_file(yaml_file);
     let filename = &args[2];
 
+    let banner = read_yaml_file(yaml_file);
     let path = &std::path::Path::new(&filename).to_path_buf();
     banner_builder::draw_image(&banner, path);
 }
