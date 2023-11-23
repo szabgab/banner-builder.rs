@@ -34,6 +34,27 @@ mod tests {
             assert_eq!(stderr, "");
         }
     }
+
+    #[test]
+    fn test_banner_builder() {
+        for name in [
+            "hello_world",
+            "youtube_thumbnail_text_background",
+            "wrap_text",
+        ] {
+            let filename = "test.png";
+            let yaml_file = format!("site/examples/{}.yaml", name);
+            let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
+            let path = &std::path::Path::new(&filename).to_path_buf();
+            banner_builder::draw_image(&banner, path);
+
+            let (exit, stdout, stderr) =
+                run(format!("diff site/examples/{}.png test.png", name).as_str());
+            assert_eq!(exit, 0);
+            assert_eq!(stdout, "");
+            assert_eq!(stderr, "");
+        }
+    }
 }
 
 fn run(command: &str) -> (i32, String, String) {
