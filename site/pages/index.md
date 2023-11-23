@@ -1,5 +1,5 @@
 ---
-title: Babu, the Banner Builder
+title: Banbu, the Banner Builder
 timestamp: 2023-11-21T17:30:01
 description: Generating images from a config file
 ---
@@ -16,7 +16,7 @@ There is a way to use this as a command line tool:
 
 ![](examples/hello_world.yaml)
 
-```babu site/examples/hello_world.yaml hello_world.png```
+```banbu site/examples/hello_world.yaml hello_world.png```
 
 ![](examples/hello_world.png)
 

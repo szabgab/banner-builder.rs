@@ -5,8 +5,8 @@ mod tests {
     use super::run;
 
     #[test]
-    fn test_babu_missing() {
-        let (exit, stdout, stderr) = run("cargo run --bin babu hello_world.yaml hello_world.png");
+    fn test_banbu_missing() {
+        let (exit, stdout, stderr) = run("cargo run --bin banbu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
         assert_eq!(stdout, "");
         assert!(stderr
@@ -14,13 +14,13 @@ mod tests {
     }
 
     #[test]
-    fn test_babu() {
+    fn test_banbu() {
         for name in [
             "hello_world",
             "youtube_thumbnail_text_background",
             "wrap_text",
         ] {
-            let cmd = format!("target/debug/babu site/examples/{}.yaml test.png", name);
+            let cmd = format!("target/debug/banbu site/examples/{}.yaml test.png", name);
             println!("{}", cmd);
             let (exit, stdout, stderr) = run(&cmd);
             assert_eq!(stderr, "");

@@ -16,6 +16,6 @@ textwrap = "0.16"
 
 
 [[bin]]
-name = "babu"
+name = "banbu"
 path = "src/main.rs"
 
