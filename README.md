@@ -9,24 +9,33 @@ TBD.
 
 ## Use as a command line tool:
 
-### Install
+### Install as a CLI tool
+
+If you have Rust on your system you can type in the following command:
 
 ```
 cargo install banner-builder
 ```
 
+If you don't have Rust, we'll supply a pre-compiled binary. TODO
+
+### Use as a CLI tool:
+
 Create a YAML file based on the example found on the [web site](https://banner-builder.code-maven.com/)
 
+Run the command supplying the path to the YAML file and the path to the image you'd like to generate:
 
 ```
 banbu hello_world.yaml hello_world.png
 ```
 
 
-## Developmen
+## Development
 
-* Clone the repo
-* Optionally set up pre-commit hook.
+* Clone the repo: `git clone https://github.com/szabgab/banner-builder.rs/`
+* Optionally set up pre-commit hook:
+    * Install [pre-commit](https://pre-commit.com/)
+    * In the cloned repository run `pre-commit install`
 
 
 ### Run tests:
@@ -38,8 +47,9 @@ cargo test
 ## Release and publish
 
 * Update version number in Cargo.toml
-* git commit
-* git tag   (`git tag -a v0.2.2 -m "publish version v0.2.2"`)
-* cargo publish
+* `git commit`
+* `cargo publish`
+* git tag using the same version number:   (`git tag -a v0.2.2 -m "publish version v0.2.2"`)
+* `git push --tags`
 
 
