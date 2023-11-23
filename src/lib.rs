@@ -7,12 +7,12 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Banner {
-    width: u32,
-    height: u32,
-    text: String,
+    pub width: u32,
+    pub height: u32,
+    pub text: String,
 
     #[serde(default = "default_white")]
-    background_color: String,
+    pub background_color: String,
 }
 
 fn default_white() -> String {

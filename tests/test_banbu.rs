@@ -5,6 +5,26 @@ mod tests {
     use super::run;
 
     #[test]
+    fn test_with_struct() {
+        let name = "hello_world";
+        let filename = "test.png";
+        let banner = banner_builder::Banner {
+            width: 1000,
+            height: 500,
+            text: "Hello World!".to_owned(),
+            background_color: "FFFFFF".to_owned(),
+        };
+        let path = &std::path::Path::new(&filename).to_path_buf();
+        banner_builder::draw_image(&banner, path);
+
+        let (exit, stdout, stderr) =
+            run(format!("diff site/examples/{}.png test.png", name).as_str());
+        assert_eq!(exit, 0);
+        assert_eq!(stdout, "");
+        assert_eq!(stderr, "");
+    }
+
+    #[test]
     fn test_banbu_missing() {
         let (exit, stdout, stderr) = run("cargo run --bin banbu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
