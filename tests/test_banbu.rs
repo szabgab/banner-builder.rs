@@ -26,6 +26,8 @@ mod tests {
 
     #[test]
     fn test_banbu_missing() {
+        std::env::set_var("RUST_LOG", "warn");
+
         let (exit, stdout, stderr) = run("cargo run --bin banbu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
         assert_eq!(stdout, "");

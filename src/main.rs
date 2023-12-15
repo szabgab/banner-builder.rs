@@ -1,4 +1,7 @@
 fn main() {
+    simple_logger::init_with_env().unwrap();
+    log::info!("Starting banner builder");
+
     let args: Vec<String> = std::env::args().collect();
     if args.len() != 3 {
         eprintln!("{} config.yaml image.png", &args[0]);

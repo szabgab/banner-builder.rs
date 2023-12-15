@@ -22,6 +22,7 @@ fn default_white() -> String {
 pub fn draw_image(banner: &Banner, path: &PathBuf) -> bool {
     let limit = 90;
     if banner.text.len() > limit {
+        log::warn!("Text is over the arbitrary limit of {limit} characters. Not generating.");
         return false;
     }
 
