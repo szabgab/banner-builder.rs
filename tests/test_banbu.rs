@@ -6,6 +6,8 @@ mod tests {
 
     #[test]
     fn test_with_struct() {
+        std::env::set_var("RUST_LOG", "warn");
+
         let name = "hello_world";
         let filename = "test.png";
         let banner = banner_builder::Banner {
@@ -37,6 +39,8 @@ mod tests {
 
     #[test]
     fn test_banbu() {
+        std::env::set_var("RUST_LOG", "warn");
+
         for name in [
             "hello_world",
             "youtube_thumbnail_text_background",
@@ -59,6 +63,8 @@ mod tests {
 
     #[test]
     fn test_banner_builder() {
+        std::env::set_var("RUST_LOG", "warn");
+
         for name in [
             "hello_world",
             "youtube_thumbnail_text_background",
