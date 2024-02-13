@@ -55,9 +55,9 @@ mod tests {
 
             let (exit, stdout, stderr) =
                 run(format!("diff site/examples/{}.png test.png", name).as_str());
-            assert_eq!(exit, 0);
             assert_eq!(stdout, "");
             assert_eq!(stderr, "");
+            assert_eq!(exit, 0);
         }
     }
 
