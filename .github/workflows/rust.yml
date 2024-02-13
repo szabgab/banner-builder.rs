@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Environment
       run: |
@@ -52,12 +52,12 @@ jobs:
 
     - name: Download processor
       run: |
-        wget https://ssg.code-maven.com/code-maven-web
-        chmod +x code-maven-web
+        wget https://ssg.code-maven.com/code-maven
+        chmod +x code-maven
 
     - name: Generate pages
       run: |
-        ./code-maven-web --root site --outdir _site
+        ./code-maven web --root site
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v2
