@@ -2,6 +2,7 @@
 title: Banbu, the Banner Builder
 timestamp: 2023-11-21T17:30:01
 description: Generating images from a config file
+published: true
 ---
 
 This code was extracted from the [Code Maven SSG](https://ssg.code-maven.com/).
