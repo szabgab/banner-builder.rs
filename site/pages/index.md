@@ -17,7 +17,9 @@ There is a way to use this as a command line tool:
 
 {% include file="examples/hello_world.yaml" %}
 
-```banbu site/examples/hello_world.yaml hello_world.png```
+```
+banbu site/examples/hello_world.yaml hello_world.png
+```
 
 ![](examples/hello_world.png)
 
