@@ -9,18 +9,19 @@ mod tests {
         std::env::set_var("RUST_LOG", "warn");
 
         let name = "hello_world";
-        let filename = "test.png";
         let banner = banner_builder::Banner {
             width: 1000,
             height: 500,
             text: "Hello World!".to_owned(),
             background_color: "FFFFFF".to_owned(),
         };
-        let path = &std::path::Path::new(&filename).to_path_buf();
-        banner_builder::draw_image(&banner, path);
+
+        let tmp_dir = tempfile::tempdir().unwrap();
+        let path = tmp_dir.path().join("test.png");
+        banner_builder::draw_image(&banner, &path);
 
         let (exit, stdout, stderr) =
-            run(format!("diff site/examples/{}.png test.png", name).as_str());
+            run(format!("diff site/examples/{}.png {}", name, path.display()).as_str());
         assert_eq!(exit, 0);
         assert_eq!(stdout, "");
         assert_eq!(stderr, "");
@@ -46,7 +47,14 @@ mod tests {
             "youtube_thumbnail_text_background",
             "wrap_text",
         ] {
-            let cmd = format!("target/debug/banbu site/examples/{}.yaml test.png", name);
+            let tmp_dir = tempfile::tempdir().unwrap();
+            let path = tmp_dir.path().join("test.png");
+
+            let cmd = format!(
+                "target/debug/banbu site/examples/{}.yaml {}",
+                name,
+                path.display()
+            );
             println!("{}", cmd);
             let (exit, stdout, stderr) = run(&cmd);
             assert_eq!(stderr, "");
@@ -54,7 +62,7 @@ mod tests {
             assert_eq!(exit, 0);
 
             let (exit, stdout, stderr) =
-                run(format!("diff site/examples/{}.png test.png", name).as_str());
+                run(format!("diff site/examples/{}.png {}", name, path.display()).as_str());
             assert_eq!(stdout, "");
             assert_eq!(stderr, "");
             assert_eq!(exit, 0);
@@ -70,14 +78,16 @@ mod tests {
             "youtube_thumbnail_text_background",
             "wrap_text",
         ] {
-            let filename = "test.png";
             let yaml_file = format!("site/examples/{}.yaml", name);
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
-            let path = &std::path::Path::new(&filename).to_path_buf();
-            banner_builder::draw_image(&banner, path);
+
+            let tmp_dir = tempfile::tempdir().unwrap();
+            let path = tmp_dir.path().join("test.png");
+
+            banner_builder::draw_image(&banner, &path);
 
             let (exit, stdout, stderr) =
-                run(format!("diff site/examples/{}.png test.png", name).as_str());
+                run(format!("diff site/examples/{}.png {}", name, path.display()).as_str());
             assert_eq!(exit, 0);
             assert_eq!(stdout, "");
             assert_eq!(stderr, "");

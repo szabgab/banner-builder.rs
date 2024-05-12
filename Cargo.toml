@@ -24,6 +24,7 @@ serde_yaml = "0.9"
 textwrap = "0.16"
 log = "0.4"
 simple_logger = "4.3"
+tempfile = "3.9.0"
 
 [[bin]]
 name = "banbu"
