@@ -56,20 +56,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
         return false;
     }
 
-    // create image
-    log::info!("create_image");
-    let mut image = RgbaImage::new(banner.width, banner.height);
-    // set background color
-    let red = u8::from_str_radix(&banner.background_color[0..=1], 16).unwrap();
-    let green = u8::from_str_radix(&banner.background_color[2..=3], 16).unwrap();
-    let blue = u8::from_str_radix(&banner.background_color[4..=5], 16).unwrap();
-    let alpha = 255;
-
-    for x in 0..banner.width {
-        for y in 0..banner.height {
-            *image.get_pixel_mut(x, y) = image::Rgba([red, green, blue, alpha]);
-        }
-    }
+    let mut image = create_image(banner);
 
     for emb in &banner.embed {
         image = embed_image(image, &root.join(&emb.file), emb.x, emb.y);
@@ -92,6 +79,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let red = 50_u8;
     let green = 50;
     let blue = 0;
+    let alpha = 255;
 
     // get the size of the text and calculate the x, y coordinate where to start to be center aligned
     // both horizontally and vertically
@@ -143,6 +131,25 @@ pub fn read_yaml_file(yaml_file: &PathBuf) -> Banner {
         }
     };
     banner
+}
+
+fn create_image(banner: &Banner) -> RgbaImage {
+    log::info!("create_image");
+
+    let mut image = RgbaImage::new(banner.width, banner.height);
+    // set background color
+    let red = u8::from_str_radix(&banner.background_color[0..=1], 16).unwrap();
+    let green = u8::from_str_radix(&banner.background_color[2..=3], 16).unwrap();
+    let blue = u8::from_str_radix(&banner.background_color[4..=5], 16).unwrap();
+    let alpha = 255;
+
+    for x in 0..banner.width {
+        for y in 0..banner.height {
+            *image.get_pixel_mut(x, y) = image::Rgba([red, green, blue, alpha]);
+        }
+    }
+
+    image
 }
 
 fn embed_image(mut img: RgbaImage, infile: &PathBuf, start_x: u32, start_y: u32) -> RgbaImage {
