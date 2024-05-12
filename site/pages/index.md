@@ -45,3 +45,9 @@ Some other banners I saw on Facebook and LinkedIn:
 * 1000x500
 * 800x400
 * 500x300
+
+## Embed images
+
+{% include file="examples/embed_image.yaml" %}
+
+![](examples/embed_image.png)
