@@ -7,7 +7,7 @@ mod tests {
 
     #[test]
     fn test_with_struct() {
-        std::env::set_var("RUST_LOG", "warn");
+        //std::env::set_var("RUST_LOG", "warn");
 
         let name = "hello_world";
         let banner = banner_builder::Banner {
@@ -31,7 +31,7 @@ mod tests {
 
     #[test]
     fn test_banbu_missing() {
-        std::env::set_var("RUST_LOG", "warn");
+        //std::env::set_var("RUST_LOG", "warn");
 
         let (exit, stdout, stderr) = run("cargo run --bin banbu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
@@ -50,7 +50,7 @@ mod tests {
             "hello_world",
             "youtube_thumbnail_text_background",
             "wrap_text",
-            //            "embed_image",
+            "embed_image",
         ] {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
@@ -60,7 +60,7 @@ mod tests {
                 name,
                 path.display()
             );
-            println!("{}", cmd);
+            println!("test_banbu cmd: {}", cmd);
             let (exit, stdout, stderr) = run(&cmd);
             assert_eq!(stderr, "");
             assert_eq!(stdout, "");
@@ -82,7 +82,7 @@ mod tests {
             "hello_world",
             "youtube_thumbnail_text_background",
             "wrap_text",
-            //            "embed_image",
+            "embed_image",
         ] {
             let yaml_file = PathBuf::from(format!("site/examples/{name}.yaml"));
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
@@ -90,7 +90,7 @@ mod tests {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
 
-            banner_builder::draw_image(&banner, &PathBuf::new(), &path);
+            banner_builder::draw_image(&banner, &PathBuf::from("site/examples"), &path);
 
             let (exit, stdout, stderr) =
                 run(format!("diff site/examples/{}.png {}", name, path.display()).as_str());

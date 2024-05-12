@@ -136,19 +136,19 @@ fn embed_image(mut img: RgbaImage, infile: &PathBuf, start_x: u32, start_y: u32)
 
     let logo = image::open(infile).unwrap();
 
-    println!("Base image: width={}, height={}", img.width(), img.height());
-    println!(
+    log::info!("Base image: width={}, height={}", img.width(), img.height());
+    log::info!(
         "Embedding:  width={}, height={}",
         logo.width(),
         logo.height()
     );
 
     if start_x + logo.width() > img.width() {
-        println!("Does not fit in width");
+        log::error!("Does not fit in width");
         return img;
     }
     if start_y + logo.height() > img.height() {
-        println!("Does not fit in height");
+        log::error!("Does not fit in height");
         return img;
     }
 
