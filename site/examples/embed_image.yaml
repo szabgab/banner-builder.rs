@@ -2,6 +2,7 @@
 width: 1000
 height: 500
 text: Rust logo
+background_color: AAAAAA
 embed:
   - file: rust.png
     x: 100
