@@ -13,6 +13,13 @@ pub struct Embed {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct Text {
+    pub text: String,
+    pub x: u32,
+    pub y: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Banner {
     pub width: u32,
     pub height: u32,
@@ -23,6 +30,9 @@ pub struct Banner {
 
     #[serde(default = "default_embed")]
     pub embed: Vec<Embed>,
+
+    #[serde(default = "default_lines")]
+    pub lines: Vec<Text>,
 }
 
 fn default_white() -> String {
@@ -30,6 +40,10 @@ fn default_white() -> String {
 }
 
 fn default_embed() -> Vec<Embed> {
+    vec![]
+}
+
+fn default_lines() -> Vec<Text> {
     vec![]
 }
 

@@ -16,6 +16,7 @@ mod tests {
             text: "Hello World!".to_owned(),
             background_color: "FFFFFF".to_owned(),
             embed: vec![],
+            lines: vec![],
         };
 
         let tmp_dir = tempfile::tempdir().unwrap();
