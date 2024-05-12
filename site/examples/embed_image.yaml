@@ -1,0 +1,9 @@
+---
+width: 1000
+height: 500
+text: Rust logo
+embed:
+  - file: rust.png
+    x: 100
+    y: 20
+
