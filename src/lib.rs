@@ -69,6 +69,20 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
         Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") as &[u8]);
     let font = Font::try_from_vec(font).unwrap();
 
+    add_centralized_text(&banner.text, font, banner.height, banner.width, &mut image);
+
+    image.save(path).unwrap();
+
+    true
+}
+
+fn add_centralized_text(
+    text: &str,
+    font: Font<'_>,
+    banner_height: u32,
+    max_width: u32,
+    image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
+) {
     let intended_text_height = 24.4;
     let scale = Scale {
         x: intended_text_height * 2.0,
@@ -84,22 +98,22 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     // get the size of the text and calculate the x, y coordinate where to start to be center aligned
     // both horizontally and vertically
     let width = 30;
-    let lines = textwrap::wrap(&banner.text, width);
+    let lines = textwrap::wrap(text, width);
     let padding: u32 = 10;
-    let (_text_width, text_height) = text_size(scale, &font, &banner.text);
+    let (_text_width, text_height) = text_size(scale, &font, text);
     let line_height = padding + text_height as u32;
-    let start_row = (banner.height / 2) - line_height * (lines.len() as u32) / 2;
+    let start_row = (banner_height / 2) - line_height * (lines.len() as u32) / 2;
     //println!("start_row: {}", start_row);
 
     for (idx, line) in lines.iter().enumerate() {
         let (text_width, _text_height) = text_size(scale, &font, line);
         //println!("Text size: {}x{}", text_width, text_height);
         //println!("banner width: {}  text width: {}", banner.width, text_width);
-        let text_start_x = (banner.width - text_width as u32) / 2;
+        let text_start_x = (max_width - text_width as u32) / 2;
         let text_start_y = start_row + (idx as u32) * line_height;
 
         draw_text_mut(
-            &mut image,
+            image,
             Rgba([red, green, blue, alpha]),
             text_start_x as i32,
             text_start_y as i32,
@@ -108,10 +122,6 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
             line,
         );
     }
-
-    image.save(path).unwrap();
-
-    true
 }
 
 pub fn read_yaml_file(yaml_file: &PathBuf) -> Banner {
