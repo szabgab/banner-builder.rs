@@ -1,12 +1,13 @@
 ---
 width: 1000
 height: 500
+text: ""
 lines:
   - text: First line
     x: 30
     y: 20
   - text: Second row
-    x: 30
+    x: 50
     y: 120
 background_color: 999999
 

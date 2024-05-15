@@ -69,7 +69,30 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
         Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") as &[u8]);
     let font = Font::try_from_vec(font).unwrap();
 
-    add_centralized_text(&banner.text, font, banner.height, banner.width, &mut image);
+    add_centralized_text(&banner.text, &font, banner.height, banner.width, &mut image);
+
+    let red = 50_u8;
+    let green = 50;
+    let blue = 0;
+    let alpha = 255;
+
+    let intended_text_height = 24.4;
+    let scale = Scale {
+        x: intended_text_height * 2.0,
+        y: intended_text_height,
+    };
+
+    for line in &banner.lines {
+        draw_text_mut(
+            &mut image,
+            Rgba([red, green, blue, alpha]),
+            line.x as i32,
+            line.y as i32,
+            scale,
+            &font,
+            &line.text,
+        );
+    }
 
     image.save(path).unwrap();
 
@@ -78,7 +101,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
 
 fn add_centralized_text(
     text: &str,
-    font: Font<'_>,
+    font: &Font<'_>,
     banner_height: u32,
     max_width: u32,
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
@@ -100,13 +123,13 @@ fn add_centralized_text(
     let width = 30;
     let lines = textwrap::wrap(text, width);
     let padding: u32 = 10;
-    let (_text_width, text_height) = text_size(scale, &font, text);
+    let (_text_width, text_height) = text_size(scale, font, text);
     let line_height = padding + text_height as u32;
     let start_row = (banner_height / 2) - line_height * (lines.len() as u32) / 2;
     //println!("start_row: {}", start_row);
 
     for (idx, line) in lines.iter().enumerate() {
-        let (text_width, _text_height) = text_size(scale, &font, line);
+        let (text_width, _text_height) = text_size(scale, font, line);
         //println!("Text size: {}x{}", text_width, text_height);
         //println!("banner width: {}  text width: {}", banner.width, text_width);
         let text_start_x = (max_width - text_width as u32) / 2;
@@ -118,7 +141,7 @@ fn add_centralized_text(
             text_start_x as i32,
             text_start_y as i32,
             scale,
-            &font,
+            font,
             line,
         );
     }

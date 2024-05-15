@@ -52,6 +52,7 @@ mod tests {
             "youtube_thumbnail_text_background",
             "wrap_text",
             "embed_image",
+            "lines",
         ] {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
@@ -84,6 +85,7 @@ mod tests {
             "youtube_thumbnail_text_background",
             "wrap_text",
             "embed_image",
+            "lines",
         ] {
             let yaml_file = PathBuf::from(format!("site/examples/{name}.yaml"));
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
