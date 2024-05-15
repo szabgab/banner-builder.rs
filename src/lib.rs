@@ -1,6 +1,6 @@
+use ab_glyph::{FontRef, PxScale};
 use image::{GenericImageView, Rgba, RgbaImage};
 use imageproc::drawing::{draw_text_mut, text_size};
-use rusttype::{Font, Scale};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::path::PathBuf;
@@ -65,9 +65,8 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
     log::info!("add text {:?}", banner.text);
 
-    let font =
-        Vec::from(include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") as &[u8]);
-    let font = Font::try_from_vec(font).unwrap();
+    let font = include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+    let font = FontRef::try_from_slice(font).unwrap();
 
     add_centralized_text(&banner.text, &font, banner.height, banner.width, &mut image);
 
@@ -77,7 +76,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let alpha = 255;
 
     let intended_text_height = 24.4;
-    let scale = Scale {
+    let scale = PxScale {
         x: intended_text_height * 2.0,
         y: intended_text_height,
     };
@@ -101,13 +100,13 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
 
 fn add_centralized_text(
     text: &str,
-    font: &Font<'_>,
+    font: &FontRef,
     banner_height: u32,
     max_width: u32,
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
 ) {
     let intended_text_height = 24.4;
-    let scale = Scale {
+    let scale = PxScale {
         x: intended_text_height * 2.0,
         y: intended_text_height,
     };
@@ -123,16 +122,16 @@ fn add_centralized_text(
     let width = 30;
     let lines = textwrap::wrap(text, width);
     let padding: u32 = 10;
-    let (_text_width, text_height) = text_size(scale, font, text);
-    let line_height = padding + text_height as u32;
+    let (_text_width, text_height) = text_size(scale, &font, text);
+    let line_height = padding + text_height;
     let start_row = (banner_height / 2) - line_height * (lines.len() as u32) / 2;
     //println!("start_row: {}", start_row);
 
     for (idx, line) in lines.iter().enumerate() {
-        let (text_width, _text_height) = text_size(scale, font, line);
+        let (text_width, _text_height) = text_size(scale, &font, line);
         //println!("Text size: {}x{}", text_width, text_height);
         //println!("banner width: {}  text width: {}", banner.width, text_width);
-        let text_start_x = (max_width - text_width as u32) / 2;
+        let text_start_x = (max_width - text_width) / 2;
         let text_start_y = start_row + (idx as u32) * line_height;
 
         draw_text_mut(
@@ -141,7 +140,7 @@ fn add_centralized_text(
             text_start_x as i32,
             text_start_y as i32,
             scale,
-            font,
+            &font,
             line,
         );
     }
