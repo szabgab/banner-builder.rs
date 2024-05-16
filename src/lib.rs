@@ -89,11 +89,8 @@ fn add_text_lines(
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     font: FontRef,
 ) {
-    let intended_text_height = 24.4;
-    let scale = PxScale {
-        x: intended_text_height * 2.0,
-        y: intended_text_height,
-    };
+    let intended_text_height = 24;
+    let scale = PxScale::from(intended_text_height as f32);
 
     for line in &banner.lines {
         draw_text_mut(
@@ -115,11 +112,8 @@ fn add_centralized_text(
     max_width: u32,
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
 ) {
-    let intended_text_height = 24.4;
-    let scale = PxScale {
-        x: intended_text_height * 2.0,
-        y: intended_text_height,
-    };
+    let intended_text_height = 24;
+    let scale = PxScale::from(intended_text_height as f32);
 
     // color of the text
     let red = 0_u8;
