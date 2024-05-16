@@ -23,6 +23,8 @@ navbar:
   start:
     - path: /
       title: Home
+    - path: /library
+      title: Library
   end:
     - path: /about
       title: About
