@@ -20,6 +20,9 @@ pub struct Text {
 
     #[serde(default = "default_black")]
     pub color: String,
+
+    #[serde(default = "default_font_size")]
+    pub size: i32,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -27,6 +30,9 @@ pub struct Banner {
     pub width: u32,
     pub height: u32,
     pub text: String,
+
+    #[serde(default = "default_font_size")]
+    pub size: i32,
 
     #[serde(default = "default_white")]
     pub background_color: String,
@@ -36,6 +42,10 @@ pub struct Banner {
 
     #[serde(default = "default_lines")]
     pub lines: Vec<Text>,
+}
+
+fn default_font_size() -> i32 {
+    24
 }
 
 fn default_black() -> String {
@@ -75,7 +85,14 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let font = include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
     let font = FontRef::try_from_slice(font).unwrap();
 
-    add_centralized_text(&banner.text, &font, banner.height, banner.width, &mut image);
+    add_centralized_text(
+        &banner.text,
+        banner.size,
+        &font,
+        banner.height,
+        banner.width,
+        &mut image,
+    );
 
     add_text_lines(banner, &mut image, font);
 
@@ -89,16 +106,13 @@ fn add_text_lines(
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     font: FontRef,
 ) {
-    let intended_text_height = 24;
-    let scale = PxScale::from(intended_text_height as f32);
-
     for line in &banner.lines {
         draw_text_mut(
             image,
             get_color(&line.color),
             line.x as i32,
             line.y as i32,
-            scale,
+            PxScale::from(line.size as f32),
             &font,
             &line.text,
         );
@@ -107,13 +121,13 @@ fn add_text_lines(
 
 fn add_centralized_text(
     text: &str,
+    size: i32,
     font: &FontRef,
     banner_height: u32,
     max_width: u32,
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
 ) {
-    let intended_text_height = 24;
-    let scale = PxScale::from(intended_text_height as f32);
+    let scale = PxScale::from(size as f32);
 
     // color of the text
     let red = 0_u8;

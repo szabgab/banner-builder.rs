@@ -24,6 +24,7 @@ mod tests {
             width: 1000,
             height: 500,
             text: "Hello World!".to_owned(),
+            size: 24,
             background_color: "FFFFFF".to_owned(),
             embed: vec![],
             lines: vec![],
