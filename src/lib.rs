@@ -120,8 +120,8 @@ fn add_centralized_text(
     };
 
     // color of the text
-    let red = 50_u8;
-    let green = 50;
+    let red = 0_u8;
+    let green = 0;
     let blue = 0;
     let alpha = 255;
 
