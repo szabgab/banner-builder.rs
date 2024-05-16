@@ -177,7 +177,11 @@ fn get_color(color: &str) -> image::Rgba<u8> {
     let red = u8::from_str_radix(&color[0..=1], 16).unwrap();
     let green = u8::from_str_radix(&color[2..=3], 16).unwrap();
     let blue = u8::from_str_radix(&color[4..=5], 16).unwrap();
-    let alpha = 255;
+    let alpha = if color.len() == 6 {
+        255
+    } else {
+        u8::from_str_radix(&color[6..=7], 16).unwrap()
+    };
 
     image::Rgba([red, green, blue, alpha])
 }

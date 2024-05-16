@@ -49,6 +49,7 @@ mod tests {
 
         for name in [
             "hello_world",
+            "hello_world_with_alpha",
             "youtube_thumbnail_text_background",
             "wrap_text",
             "embed_image",
@@ -82,6 +83,7 @@ mod tests {
 
         for name in [
             "hello_world",
+            "hello_world_with_alpha",
             "youtube_thumbnail_text_background",
             "wrap_text",
             "embed_image",
