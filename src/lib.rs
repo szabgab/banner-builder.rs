@@ -17,6 +17,9 @@ pub struct Text {
     pub text: String,
     pub x: u32,
     pub y: u32,
+
+    #[serde(default = "default_black")]
+    pub color: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -33,6 +36,10 @@ pub struct Banner {
 
     #[serde(default = "default_lines")]
     pub lines: Vec<Text>,
+}
+
+fn default_black() -> String {
+    "000000FF".to_string()
 }
 
 fn default_white() -> String {
@@ -82,11 +89,6 @@ fn add_text_lines(
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     font: FontRef,
 ) {
-    let red = 0_u8;
-    let green = 0;
-    let blue = 0;
-    let alpha = 255;
-
     let intended_text_height = 24.4;
     let scale = PxScale {
         x: intended_text_height * 2.0,
@@ -96,7 +98,7 @@ fn add_text_lines(
     for line in &banner.lines {
         draw_text_mut(
             image,
-            Rgba([red, green, blue, alpha]),
+            get_color(&line.color),
             line.x as i32,
             line.y as i32,
             scale,

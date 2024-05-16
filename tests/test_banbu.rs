@@ -54,6 +54,7 @@ mod tests {
             "wrap_text",
             "embed_image",
             "lines",
+            "lines_with_color",
         ] {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
@@ -88,6 +89,7 @@ mod tests {
             "wrap_text",
             "embed_image",
             "lines",
+            "lines_with_color",
         ] {
             let yaml_file = PathBuf::from(format!("site/examples/{name}.yaml"));
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);

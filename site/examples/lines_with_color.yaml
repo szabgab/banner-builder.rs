@@ -1,0 +1,19 @@
+---
+width: 1000
+height: 500
+text: ""
+lines:
+  - text: Red line
+    x: 30
+    y: 20
+    color: FF0000FF
+  - text:  Green text
+    x: 50
+    y: 120
+    color: 00FF00FF
+  - text: Blue text
+    x: 300
+    y: 120
+    color: 0000FFFF
+background_color: FFFFFFFF
+
