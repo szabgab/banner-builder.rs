@@ -82,8 +82,8 @@ fn add_text_lines(
     image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     font: FontRef,
 ) {
-    let red = 50_u8;
-    let green = 50;
+    let red = 0_u8;
+    let green = 0;
     let blue = 0;
     let alpha = 255;
 
