@@ -59,7 +59,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let mut image = create_image(banner);
 
     for emb in &banner.embed {
-        image = embed_image(image, &root.join(&emb.file), emb.x, emb.y);
+        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y);
     }
 
     //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
@@ -192,7 +192,12 @@ fn create_image(banner: &Banner) -> RgbaImage {
     image
 }
 
-fn embed_image(mut img: RgbaImage, infile: &PathBuf, start_x: u32, start_y: u32) -> RgbaImage {
+fn embed_image(
+    img: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
+    infile: &PathBuf,
+    start_x: u32,
+    start_y: u32,
+) {
     log::info!("embed_image from file {infile:?}");
 
     let logo = image::open(infile).unwrap();
@@ -206,11 +211,11 @@ fn embed_image(mut img: RgbaImage, infile: &PathBuf, start_x: u32, start_y: u32)
 
     if start_x + logo.width() > img.width() {
         log::error!("Does not fit in width");
-        return img;
+        return;
     }
     if start_y + logo.height() > img.height() {
         log::error!("Does not fit in height");
-        return img;
+        return;
     }
 
     for x in 0..logo.width() {
@@ -218,6 +223,4 @@ fn embed_image(mut img: RgbaImage, infile: &PathBuf, start_x: u32, start_y: u32)
             *img.get_pixel_mut(start_x + x, start_y + y) = logo.get_pixel(x, y);
         }
     }
-
-    img
 }
