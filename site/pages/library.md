@@ -20,7 +20,10 @@ fn main() {
             width: 1000,
             height: 500,
             text: "Hello World!".to_owned(),
+            size: 24,
             background_color: "F0F0FF".to_owned(),
+            embed: vec![],
+            lines: vec![],
         };
         let path = &std::path::Path::new(&filename).to_path_buf();
         banner_builder::draw_image(&banner, path);
