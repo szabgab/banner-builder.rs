@@ -5,6 +5,16 @@ mod tests {
     use super::run;
     use std::path::PathBuf;
 
+    const CASES: [&str; 7] = [
+        "hello_world",
+        "hello_world_with_alpha",
+        "youtube_thumbnail_text_background",
+        "wrap_text",
+        "embed_image",
+        "lines",
+        "lines_with_color",
+    ];
+
     #[test]
     fn test_with_struct() {
         //std::env::set_var("RUST_LOG", "warn");
@@ -47,15 +57,7 @@ mod tests {
     fn test_banbu() {
         std::env::set_var("RUST_LOG", "warn");
 
-        for name in [
-            "hello_world",
-            "hello_world_with_alpha",
-            "youtube_thumbnail_text_background",
-            "wrap_text",
-            "embed_image",
-            "lines",
-            "lines_with_color",
-        ] {
+        for name in CASES {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
 
@@ -82,15 +84,7 @@ mod tests {
     fn test_banner_builder() {
         std::env::set_var("RUST_LOG", "warn");
 
-        for name in [
-            "hello_world",
-            "hello_world_with_alpha",
-            "youtube_thumbnail_text_background",
-            "wrap_text",
-            "embed_image",
-            "lines",
-            "lines_with_color",
-        ] {
+        for name in CASES {
             let yaml_file = PathBuf::from(format!("site/examples/{name}.yaml"));
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
 
