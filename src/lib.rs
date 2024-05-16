@@ -230,11 +230,11 @@ fn embed_image(
     );
 
     if start_x + logo.width() > img.width() {
-        log::error!("Does not fit in width");
+        log::error!("The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}", logo.width(), img.width());
         return;
     }
     if start_y + logo.height() > img.height() {
-        log::error!("Does not fit in height");
+        log::error!("The image {infile:?} does not fit in height. start_y {start_y} height: {} available: {}", logo.height(), img.height());
         return;
     }
 
