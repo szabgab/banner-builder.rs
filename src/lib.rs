@@ -70,6 +70,18 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
 
     add_centralized_text(&banner.text, &font, banner.height, banner.width, &mut image);
 
+    add_text_lines(banner, &mut image, font);
+
+    image.save(path).unwrap();
+
+    true
+}
+
+fn add_text_lines(
+    banner: &Banner,
+    image: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
+    font: FontRef,
+) {
     let red = 50_u8;
     let green = 50;
     let blue = 0;
@@ -83,7 +95,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
 
     for line in &banner.lines {
         draw_text_mut(
-            &mut image,
+            image,
             Rgba([red, green, blue, alpha]),
             line.x as i32,
             line.y as i32,
@@ -92,10 +104,6 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
             &line.text,
         );
     }
-
-    image.save(path).unwrap();
-
-    true
 }
 
 fn add_centralized_text(
