@@ -173,17 +173,21 @@ pub fn read_yaml_file(yaml_file: &PathBuf) -> Banner {
     banner
 }
 
+fn get_color(color: &str) -> image::Rgba<u8> {
+    let red = u8::from_str_radix(&color[0..=1], 16).unwrap();
+    let green = u8::from_str_radix(&color[2..=3], 16).unwrap();
+    let blue = u8::from_str_radix(&color[4..=5], 16).unwrap();
+    let alpha = 255;
+
+    image::Rgba([red, green, blue, alpha])
+}
+
 fn create_image(banner: &Banner) -> RgbaImage {
     log::info!("create_image");
 
     let mut image = RgbaImage::new(banner.width, banner.height);
     // set background color
-    let color = &banner.background_color;
-    let red = u8::from_str_radix(&color[0..=1], 16).unwrap();
-    let green = u8::from_str_radix(&color[2..=3], 16).unwrap();
-    let blue = u8::from_str_radix(&color[4..=5], 16).unwrap();
-    let alpha = 255;
-    let color = image::Rgba([red, green, blue, alpha]);
+    let color = get_color(&banner.background_color);
 
     for x in 0..banner.width {
         for y in 0..banner.height {
