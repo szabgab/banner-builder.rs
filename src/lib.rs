@@ -1,4 +1,6 @@
 use ab_glyph::{FontRef, PxScale};
+use image::imageops::FilterType;
+use image::DynamicImage;
 use image::{GenericImageView, Rgba, RgbaImage};
 use imageproc::drawing::{draw_text_mut, text_size};
 use serde::{Deserialize, Serialize};
@@ -10,6 +12,7 @@ pub struct Embed {
     pub file: String,
     pub x: u32,
     pub y: u32,
+    pub width: Option<u32>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -76,7 +79,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let mut image = create_image(banner);
 
     for emb in &banner.embed {
-        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y);
+        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y, emb.width);
     }
 
     //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
@@ -212,15 +215,26 @@ fn create_image(banner: &Banner) -> RgbaImage {
     image
 }
 
+fn resize_image(img: DynamicImage, width: u32) -> DynamicImage {
+    let height = width * img.height() / img.width();
+    let filter = FilterType::Nearest;
+    img.resize(width, height, filter)
+}
+
 fn embed_image(
     img: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     infile: &PathBuf,
     start_x: u32,
     start_y: u32,
+    width: Option<u32>,
 ) {
     log::info!("embed_image from file {infile:?}");
 
     let logo = image::open(infile).unwrap();
+    let logo = match width {
+        Some(width) => resize_image(logo, width),
+        None => logo,
+    };
 
     log::info!("Base image: width={}, height={}", img.width(), img.height());
     log::info!(
@@ -234,7 +248,7 @@ fn embed_image(
         return;
     }
     if start_y + logo.height() > img.height() {
-        log::error!("The image {infile:?} does not fit in height. start_y {start_y} height: {} available: {}", logo.height(), img.height());
+        log::error!("The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}", logo.height(), img.height());
         return;
     }
 
