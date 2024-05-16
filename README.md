@@ -33,7 +33,7 @@ cargo test
 * run `cargo test`
 * `git commit`
 * `cargo publish`
-* git tag using the same version number:   (`git tag -a v0.2.2 -m "publish version v0.2.2"`)
+* git tag using the same version number:   (`git tag -a v0.2.3 -m "publish version v0.2.3"`)
 * `git push --tags`
 
 
