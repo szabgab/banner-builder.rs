@@ -51,3 +51,12 @@ Some other banners I saw on Facebook and LinkedIn:
 {% include file="examples/embed_image.yaml" %}
 
 ![](examples/embed_image.png)
+
+## Add text with location (lines)
+
+{% include file="examples/lines.yaml" %}
+
+![](examples/lines.png)
+
+
+
