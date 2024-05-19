@@ -254,7 +254,11 @@ fn embed_image(
 
     for x in 0..logo.width() {
         for y in 0..logo.height() {
-            *img.get_pixel_mut(start_x + x, start_y + y) = logo.get_pixel(x, y);
+            let px = logo.get_pixel(x, y);
+            // use alpha channel as mask
+            if px[3] == 255 {
+                *img.get_pixel_mut(start_x + x, start_y + y) = logo.get_pixel(x, y);
+            }
         }
     }
 }
