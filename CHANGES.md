@@ -1,5 +1,5 @@
 
-    - rtl (right to left) support
+    - rtl (right to left) support automatically right-aligned
 
 # v0.2.4
     - resize embedded images

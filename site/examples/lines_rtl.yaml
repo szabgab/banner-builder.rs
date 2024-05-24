@@ -16,7 +16,7 @@ lines:
     y: 220
     size: 50
   - text: טקסט בעברית
-    x: 30
+    x: 970
     y: 350
     size: 50
     rtl: true

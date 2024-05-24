@@ -131,18 +131,26 @@ fn add_text_lines(
     font: FontRef,
 ) {
     for line in &banner.lines {
-        let text = if line.rtl {
-            line.text.reverse()
+        let scale = PxScale::from(line.size as f32);
+        let (text_width, _text_height) = text_size(scale, &font, &line.text);
+
+        let (text, x, y) = if line.rtl {
+            if line.x < text_width {
+                eprintln!("In rtl=true line '{:?}', the text is right-aligned and thus x should be the right coordinat. (x: {} < text width: {})", line.text.reverse(), line.x, text_width);
+                std::process::exit(1);
+            }
+
+            (line.text.reverse(), line.x - text_width, line.y)
         } else {
-            line.text.clone()
+            (line.text.clone(), line.x, line.y)
         };
 
         draw_text_mut(
             image,
             get_color(&line.color),
-            line.x as i32,
-            line.y as i32,
-            PxScale::from(line.size as f32),
+            x as i32,
+            y as i32,
+            scale,
             &font,
             &text,
         );
