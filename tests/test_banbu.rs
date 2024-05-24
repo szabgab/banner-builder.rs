@@ -5,7 +5,7 @@ mod tests {
     use super::run;
     use std::path::PathBuf;
 
-    const CASES: [&str; 7] = [
+    const CASES: [&str; 8] = [
         "hello_world",
         "hello_world_with_alpha",
         "youtube_thumbnail_text_background",
@@ -13,6 +13,7 @@ mod tests {
         "embed_image",
         "lines",
         "lines_with_color",
+        "lines_rtl",
     ];
 
     #[test]

@@ -21,6 +21,9 @@ pub struct Text {
     pub x: u32,
     pub y: u32,
 
+    #[serde(default = "default_false")]
+    pub rtl: bool,
+
     #[serde(default = "default_black")]
     pub color: String,
 
@@ -47,6 +50,10 @@ pub struct Banner {
     pub lines: Vec<Text>,
 }
 
+fn default_false() -> bool {
+    false
+}
+
 fn default_font_size() -> i32 {
     24
 }
@@ -65,6 +72,20 @@ fn default_embed() -> Vec<Embed> {
 
 fn default_lines() -> Vec<Text> {
     vec![]
+}
+
+// fn reverse_string(text: &str) -> String {
+//     text.chars().rev().collect::<String>()
+// }
+
+trait Reverse {
+    fn reverse(&self) -> String;
+}
+
+impl Reverse for str {
+    fn reverse(&self) -> String {
+        self.chars().rev().collect::<String>()
+    }
 }
 
 pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
@@ -110,6 +131,12 @@ fn add_text_lines(
     font: FontRef,
 ) {
     for line in &banner.lines {
+        let text = if line.rtl {
+            line.text.reverse()
+        } else {
+            line.text.clone()
+        };
+
         draw_text_mut(
             image,
             get_color(&line.color),
@@ -117,7 +144,7 @@ fn add_text_lines(
             line.y as i32,
             PxScale::from(line.size as f32),
             &font,
-            &line.text,
+            &text,
         );
     }
 }

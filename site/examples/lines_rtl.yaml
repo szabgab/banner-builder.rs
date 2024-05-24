@@ -1,0 +1,24 @@
+---
+width: 1000
+height: 500
+text: ""
+lines:
+  - text: Left to right text
+    x: 30
+    y: 20
+    size: 50
+  - text: The next line is in Hebrew
+    x: 30
+    y: 120
+    size: 50
+  - text: written from right to left
+    x: 30
+    y: 220
+    size: 50
+  - text: טקסט בעברית
+    x: 30
+    y: 350
+    size: 50
+    rtl: true
+background_color: FFFFFFFF
+
