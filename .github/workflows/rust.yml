@@ -46,6 +46,9 @@ jobs:
     - name: Clippy stop at any warning
       run: cargo clippy -- --deny warnings
 
+    - name: audit
+      run: cargo audit
+
 
     - name: Setup Pages
       uses: actions/configure-pages@v5
