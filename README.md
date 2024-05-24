@@ -26,14 +26,15 @@ cargo test
 
 ## Release and publish
 
-* Update version number in Cargo.toml
+* Update version number in Cargo.toml to 0.2.4
 * Update the CHANGES.md file
 * run `cargo fmt`
 * run `cargo clippy`
 * run `cargo test`
-* `git commit`
+* `git add .`
+* `git commit -m "prepare for 0.2.4"`
 * `cargo publish`
-* git tag using the same version number:   (`git tag -a v0.2.3 -m "publish version v0.2.3"`)
+* git tag using the same version number:   (`git tag -a v0.2.4 -m "publish version v0.2.4"`)
 * `git push --tags`
 
 
