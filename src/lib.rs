@@ -266,7 +266,7 @@ fn embed_image(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("embed_image from file {infile:?}");
 
-    let logo = image::open(infile).unwrap();
+    let logo = image::open(infile)?;
     let logo = match width {
         Some(width) => resize_image(logo, width),
         None => logo,
@@ -280,12 +280,10 @@ fn embed_image(
     );
 
     if start_x + logo.width() > img.width() {
-        log::error!("The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}", logo.width(), img.width());
-        return Ok(());
+        return Err(Box::<dyn Error>::from(format!("The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}", logo.width(), img.width())));
     }
     if start_y + logo.height() > img.height() {
-        log::error!("The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}", logo.height(), img.height());
-        return Ok(());
+        return Err(Box::<dyn Error>::from(format!("The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}", logo.height(), img.height())));
     }
 
     for x in 0..logo.width() {
