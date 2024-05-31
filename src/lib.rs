@@ -4,6 +4,7 @@ use image::DynamicImage;
 use image::{GenericImageView, Rgba, RgbaImage};
 use imageproc::drawing::{draw_text_mut, text_size};
 use serde::{Deserialize, Serialize};
+use std::error::Error;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -100,7 +101,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     let mut image = create_image(banner);
 
     for emb in &banner.embed {
-        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y, emb.width);
+        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y, emb.width).unwrap();
     }
 
     //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
@@ -262,7 +263,7 @@ fn embed_image(
     start_x: u32,
     start_y: u32,
     width: Option<u32>,
-) {
+) -> Result<(), Box<dyn Error>> {
     log::info!("embed_image from file {infile:?}");
 
     let logo = image::open(infile).unwrap();
@@ -280,11 +281,11 @@ fn embed_image(
 
     if start_x + logo.width() > img.width() {
         log::error!("The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}", logo.width(), img.width());
-        return;
+        return Ok(());
     }
     if start_y + logo.height() > img.height() {
         log::error!("The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}", logo.height(), img.height());
-        return;
+        return Ok(());
     }
 
     for x in 0..logo.width() {
@@ -296,4 +297,6 @@ fn embed_image(
             }
         }
     }
+
+    Ok(())
 }
