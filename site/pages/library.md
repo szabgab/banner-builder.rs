@@ -26,7 +26,8 @@ fn main() {
             lines: vec![],
         };
         let path = &std::path::Path::new(&filename).to_path_buf();
-        banner_builder::draw_image(&banner, path);
+        let folder = PathBuf::from(".");
+        banner_builder::draw_image(&banner, folder, path);
 }
 ```
 
