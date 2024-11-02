@@ -14,6 +14,7 @@ use std::error::Error;
 use std::path::Path;
 use std::path::PathBuf;
 
+/// Represent an image to be embedded in the banner
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Embed {
     pub file: String,
@@ -22,15 +23,18 @@ pub struct Embed {
     pub width: Option<u32>,
 }
 
+/// Represent a line of text to be displayed on the banner
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Text {
     pub text: String,
     pub x: u32,
     pub y: u32,
 
+    // if true, the text is right-to-left
     #[serde(default = "default_false")]
     pub rtl: bool,
 
+    /// RGB color of the text (in hex format)
     #[serde(default = "default_black")]
     pub color: String,
 
@@ -224,6 +228,9 @@ fn add_centralized_text(
     }
 }
 
+/// Read the YAML file and return the `Banner` struct
+///
+/// * yaml_file: the path to the YAML file
 pub fn read_yaml_file(yaml_file: &PathBuf) -> Banner {
     log::info!("read_yaml_file: {yaml_file:?}");
 
