@@ -1,3 +1,9 @@
+//! **Banner Builder** was developed to make it easy to create thumbnails for YouTube videos,
+//! banner images for Meetups, and for blog posts that would be included on various
+//! social media platforms.
+//!
+//! It comes with a command line tool called [banbu](../banbu/index.html) and also a library that can be used in other Rust projects.
+
 use ab_glyph::{FontRef, PxScale};
 use image::imageops::FilterType;
 use image::DynamicImage;
@@ -32,21 +38,31 @@ pub struct Text {
     pub size: i32,
 }
 
+/// Struct to hold all the information about the banner
+///
+/// See the fields for more information.
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Banner {
+    /// width of the banner
     pub width: u32,
+    /// height of the banner
     pub height: u32,
+    /// text to be displayed on the banner (better use the lines for multi-line text)
     pub text: String,
 
+    /// font size of the text
     #[serde(default = "default_font_size")]
     pub size: i32,
 
+    /// background color of the banner (in hex format)
     #[serde(default = "default_white")]
     pub background_color: String,
 
+    /// List of images to be embedded in the banner
     #[serde(default = "default_embed")]
     pub embed: Vec<Embed>,
 
+    /// List of lines to be displayed on the banner
     #[serde(default = "default_lines")]
     pub lines: Vec<Text>,
 }
@@ -89,6 +105,11 @@ impl Reverse for str {
     }
 }
 
+/// Draw the image based on the information in the `Banner` struct
+///
+/// * banner: the `Banner` struct that holds all the information
+/// * root: the root directory where the images are located
+/// * path: where to save the generated image
 pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     log::info!("draw_image {path:?}");
 
