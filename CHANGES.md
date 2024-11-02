@@ -1,3 +1,7 @@
+# v0.2.6 2024.11.02
+    - Add some more documentation.
+    - Update the dependencies
+
 # v0.2.5 2024.11.02
     - Add some documentation.
 
