@@ -47,7 +47,9 @@ jobs:
       run: cargo clippy -- --deny warnings
 
     - name: audit
-      run: cargo audit
+      run: |
+        cargo install cargo-audit
+        cargo audit
 
 
     - name: Setup Pages
