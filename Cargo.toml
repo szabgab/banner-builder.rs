@@ -15,7 +15,7 @@ homepage = "https://banner-builder.code-maven.com/"
 exclude = ["/site"]
 
 [dependencies]
-clap = { version = "4.3", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 image = "0.25"
 imageproc = "0.26"
 rusttype = "0.9"
@@ -23,8 +23,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 textwrap = "0.16"
 log = "0.4"
-simple_logger = "5.1"
-tempfile = "3.9.0"
+simple_logger = "5.2"
+tempfile = "3.26.0"
 ab_glyph = "0.2.26"
 
 [[bin]]
