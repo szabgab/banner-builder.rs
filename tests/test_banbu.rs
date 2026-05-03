@@ -2,7 +2,7 @@ use std::process::Command;
 
 #[cfg(test)]
 mod tests {
-    use super::run;
+    use super::{run, run_with_rust_log};
     use std::path::PathBuf;
 
     const CASES: [&str; 8] = [
@@ -44,9 +44,8 @@ mod tests {
 
     #[test]
     fn test_banbu_missing() {
-        std::env::set_var("RUST_LOG", "warn");
-
-        let (exit, stdout, stderr) = run("cargo run --bin banbu hello_world.yaml hello_world.png");
+        let (exit, stdout, stderr) =
+            run_with_rust_log("cargo run --bin banbu hello_world.yaml hello_world.png");
         assert_eq!(exit, 1);
         assert_eq!(stdout, "");
         //assert_eq!(stderr, "");
@@ -57,8 +56,6 @@ mod tests {
 
     #[test]
     fn test_banbu() {
-        std::env::set_var("RUST_LOG", "warn");
-
         for name in CASES {
             let tmp_dir = tempfile::tempdir().unwrap();
             let path = tmp_dir.path().join("test.png");
@@ -69,7 +66,7 @@ mod tests {
                 path.display()
             );
             println!("test_banbu cmd: {}", cmd);
-            let (exit, stdout, stderr) = run(&cmd);
+            let (exit, stdout, stderr) = run_with_rust_log(&cmd);
             assert_eq!(stderr, "");
             assert_eq!(stdout, "");
             assert_eq!(exit, 0);
@@ -84,8 +81,6 @@ mod tests {
 
     #[test]
     fn test_banner_builder() {
-        std::env::set_var("RUST_LOG", "warn");
-
         for name in CASES {
             let yaml_file = PathBuf::from(format!("site/examples/{name}.yaml"));
             let banner: banner_builder::Banner = banner_builder::read_yaml_file(&yaml_file);
@@ -105,6 +100,14 @@ mod tests {
 }
 
 fn run(command: &str) -> (i32, String, String) {
+    run_with_env(command, None)
+}
+
+fn run_with_rust_log(command: &str) -> (i32, String, String) {
+    run_with_env(command, Some(("RUST_LOG", "warn")))
+}
+
+fn run_with_env(command: &str, env_var: Option<(&str, &str)>) -> (i32, String, String) {
     let parts: Vec<&str> = command.split(' ').collect();
 
     let cmd = &parts[0];
@@ -112,10 +115,13 @@ fn run(command: &str) -> (i32, String, String) {
     println!("cmd:  '{}'", cmd);
     println!("args: '{:?}'", args);
 
-    let result = Command::new(cmd)
-        .args(args)
-        .output()
-        .expect("ls command failed to start");
+    let mut command = Command::new(cmd);
+    command.args(args);
+    if let Some((key, value)) = env_var {
+        command.env(key, value);
+    }
+
+    let result = command.output().expect("command failed to start");
 
     (
         result.status.code().unwrap(),

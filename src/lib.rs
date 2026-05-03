@@ -5,8 +5,8 @@
 //! It comes with a command line tool called [banbu](../banbu/index.html) and also a library that can be used in other Rust projects.
 
 use ab_glyph::{FontRef, PxScale};
-use image::imageops::FilterType;
 use image::DynamicImage;
+use image::imageops::FilterType;
 use image::{GenericImageView, Rgba, RgbaImage};
 use imageproc::drawing::{draw_text_mut, text_size};
 use serde::{Deserialize, Serialize};
@@ -162,7 +162,12 @@ fn add_text_lines(
 
         let (text, x, y) = if line.rtl {
             if line.x < text_width {
-                eprintln!("In rtl=true line '{:?}', the text is right-aligned and thus x should be the right coordinat. (x: {} < text width: {})", line.text.reverse(), line.x, text_width);
+                eprintln!(
+                    "In rtl=true line '{:?}', the text is right-aligned and thus x should be the right coordinat. (x: {} < text width: {})",
+                    line.text.reverse(),
+                    line.x,
+                    text_width
+                );
                 std::process::exit(1);
             }
 
@@ -308,10 +313,18 @@ fn embed_image(
     );
 
     if start_x + logo.width() > img.width() {
-        return Err(Box::<dyn Error>::from(format!("The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}", logo.width(), img.width())));
+        return Err(Box::<dyn Error>::from(format!(
+            "The image {infile:?} does not fit in width. start_x: {start_x} width: {} available: {}",
+            logo.width(),
+            img.width()
+        )));
     }
     if start_y + logo.height() > img.height() {
-        return Err(Box::<dyn Error>::from(format!("The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}", logo.height(), img.height())));
+        return Err(Box::<dyn Error>::from(format!(
+            "The image {infile:?} does not fit in height. start_y: {start_y} height: {} available: {}",
+            logo.height(),
+            img.height()
+        )));
     }
 
     for x in 0..logo.width() {
