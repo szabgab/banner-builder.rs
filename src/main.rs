@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     if args.len() != 3 {
         return Err(Box::<dyn Error>::from(format!(
             "{} config.yaml image.png",
-            &args[0]
+            args[0]
         )));
     }
     let yaml_file = PathBuf::from(&args[1]);
