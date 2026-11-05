@@ -80,6 +80,9 @@ pub struct Embed {
     /// Optional corner radius (e.g., `25`, `"25px"`, `"25%"`, `"50%"`, or `"round"`)
     #[serde(default, alias = "border_radius")]
     pub radius: Option<EmbedRadius>,
+    /// Optional hex color in the embedded image to treat as transparent (e.g., `"FFFFFF"`)
+    #[serde(default)]
+    pub transparent_color: Option<String>,
 }
 
 /// Represent a line of text to be displayed on the banner
@@ -210,6 +213,7 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
             emb.y,
             emb.width,
             emb.radius.as_ref(),
+            emb.transparent_color.as_deref(),
         ) {
             eprintln!("Error embedding image: {error}");
             std::process::exit(1);
@@ -677,6 +681,46 @@ fn shape_coverage(shape: EmbedShape, x: u32, y: u32, width: u32, height: u32) ->
     }
 }
 
+fn apply_color_key(src: Rgba<u8>, key: Rgba<u8>) -> (Rgba<u8>, f32) {
+    let mut key_alpha = 0.0_f32;
+    for c in 0..3 {
+        let s = src[c] as f32;
+        let k = key[c] as f32;
+        let channel_alpha = if (s - k).abs() < f32::EPSILON {
+            0.0
+        } else if s > k {
+            (s - k) / (255.0 - k)
+        } else {
+            (k - s) / k
+        };
+        if channel_alpha > key_alpha {
+            key_alpha = channel_alpha;
+        }
+    }
+
+    if key_alpha <= 0.0 {
+        return (src, 0.0);
+    }
+
+    let recover = |s: u8, k: u8| -> u8 {
+        let s = s as f32;
+        let k = k as f32;
+        ((s - k * (1.0 - key_alpha)) / key_alpha)
+            .round()
+            .clamp(0.0, 255.0) as u8
+    };
+
+    (
+        Rgba([
+            recover(src[0], key[0]),
+            recover(src[1], key[1]),
+            recover(src[2], key[2]),
+            src[3],
+        ]),
+        key_alpha,
+    )
+}
+
 fn embed_image(
     img: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     infile: &PathBuf,
@@ -684,6 +728,7 @@ fn embed_image(
     start_y: u32,
     width: Option<u32>,
     radius: Option<&EmbedRadius>,
+    transparent_color: Option<&str>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("embed_image from file {infile:?}");
 
@@ -716,9 +761,13 @@ fn embed_image(
     }
 
     let shape = resolve_embed_shape(radius, logo.width(), logo.height())?;
+    let key_color = match transparent_color {
+        Some(color) => Some(get_color_checked(color)?),
+        None => None,
+    };
 
-    match shape {
-        EmbedShape::Rectangle => {
+    match (shape, key_color) {
+        (EmbedShape::Rectangle, None) => {
             for x in 0..logo.width() {
                 for y in 0..logo.height() {
                     let px = logo.get_pixel(x, y);
@@ -729,7 +778,7 @@ fn embed_image(
                 }
             }
         }
-        EmbedShape::RoundedRect { .. } | EmbedShape::Circle { .. } => {
+        _ => {
             for x in 0..logo.width() {
                 for y in 0..logo.height() {
                     let coverage = shape_coverage(shape, x, y, logo.width(), logo.height());
@@ -737,7 +786,11 @@ fn embed_image(
                         continue;
                     }
                     let src = logo.get_pixel(x, y);
-                    let alpha = (src[3] as f32 / 255.0) * coverage;
+                    let (src, key_alpha) = match key_color {
+                        Some(key) => apply_color_key(src, key),
+                        None => (src, 1.0),
+                    };
+                    let alpha = (src[3] as f32 / 255.0) * coverage * key_alpha;
                     if alpha <= 0.0 {
                         continue;
                     }

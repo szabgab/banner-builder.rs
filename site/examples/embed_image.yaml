@@ -7,4 +7,8 @@ embed:
   - file: rust.png
     x: 100
     y: 20
+  - file: rust.png
+    x: 780
+    y: 20
+    transparent_color: FFFFFF
 
