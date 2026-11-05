@@ -47,6 +47,14 @@ mod tests {
     }
 
     #[test]
+    fn test_version() {
+        let (exit, stdout, stderr) = run_with_rust_log("target/debug/banbu --version");
+        assert_eq!(exit, 0);
+        assert_eq!(stdout, format!("banbu {}\n", env!("CARGO_PKG_VERSION")));
+        assert_eq!(stderr, "");
+    }
+
+    #[test]
     fn test_banbu_missing() {
         let (exit, stdout, stderr) =
             run_with_rust_log("cargo run --bin banbu hello_world.yaml hello_world.png");
