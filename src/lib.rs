@@ -55,6 +55,21 @@ struct GradientStop {
     position: f32,
 }
 
+/// Represent the corner radius or circular shape of an embedded image
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(untagged)]
+pub enum EmbedRadius {
+    Pixels(u32),
+    Text(String),
+}
+
+#[derive(Debug, Clone, Copy)]
+enum EmbedShape {
+    Rectangle,
+    RoundedRect { radius: f32 },
+    Circle { radius: f32 },
+}
+
 /// Represent an image to be embedded in the banner
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Embed {
@@ -62,6 +77,9 @@ pub struct Embed {
     pub x: u32,
     pub y: u32,
     pub width: Option<u32>,
+    /// Optional corner radius (e.g., `25`, `"25px"`, `"25%"`, `"50%"`, or `"round"`)
+    #[serde(default, alias = "border_radius")]
+    pub radius: Option<EmbedRadius>,
 }
 
 /// Represent a line of text to be displayed on the banner
@@ -185,7 +203,17 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
     };
 
     for emb in &banner.embed {
-        embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y, emb.width).unwrap();
+        if let Err(error) = embed_image(
+            &mut image,
+            &root.join(&emb.file),
+            emb.x,
+            emb.y,
+            emb.width,
+            emb.radius.as_ref(),
+        ) {
+            eprintln!("Error embedding image: {error}");
+            std::process::exit(1);
+        }
     }
 
     //"/snap/cups/980/usr/share/fonts/truetype/freefont/FreeSans.ttf"
@@ -561,12 +589,101 @@ fn resize_image(img: DynamicImage, width: u32) -> DynamicImage {
     img.resize(width, height, filter)
 }
 
+fn resolve_embed_shape(
+    radius: Option<&EmbedRadius>,
+    width: u32,
+    height: u32,
+) -> Result<EmbedShape, String> {
+    let min_dim = width.min(height) as f32;
+    let max_radius = min_dim / 2.0;
+
+    match radius {
+        None => Ok(EmbedShape::Rectangle),
+        Some(EmbedRadius::Pixels(px)) => {
+            if *px == 0 {
+                Ok(EmbedShape::Rectangle)
+            } else {
+                Ok(EmbedShape::RoundedRect {
+                    radius: (*px as f32).min(max_radius),
+                })
+            }
+        }
+        Some(EmbedRadius::Text(raw)) => {
+            let trimmed = raw.trim();
+            if trimmed.eq_ignore_ascii_case("round") || trimmed.eq_ignore_ascii_case("circle") {
+                Ok(EmbedShape::Circle { radius: max_radius })
+            } else if trimmed.ends_with('%') {
+                let ratio = parse_percent(trimmed)?;
+                if ratio == 0.0 {
+                    Ok(EmbedShape::Rectangle)
+                } else if ratio >= 0.5 {
+                    Ok(EmbedShape::Circle { radius: max_radius })
+                } else {
+                    Ok(EmbedShape::RoundedRect {
+                        radius: (ratio * min_dim).min(max_radius),
+                    })
+                }
+            } else {
+                let numeric = trimmed.strip_suffix("px").unwrap_or(trimmed).trim();
+                let parsed = numeric.parse::<f32>().map_err(|error| {
+                    format!("Invalid embed radius '{raw}'. Could not parse number: {error}")
+                })?;
+                if parsed < 0.0 {
+                    return Err(format!(
+                        "Invalid embed radius '{raw}'. Radius must be non-negative."
+                    ));
+                }
+                if parsed == 0.0 {
+                    Ok(EmbedShape::Rectangle)
+                } else {
+                    Ok(EmbedShape::RoundedRect {
+                        radius: parsed.min(max_radius),
+                    })
+                }
+            }
+        }
+    }
+}
+
+fn shape_coverage(shape: EmbedShape, x: u32, y: u32, width: u32, height: u32) -> f32 {
+    let px = x as f32 + 0.5;
+    let py = y as f32 + 0.5;
+    let w = width as f32;
+    let h = height as f32;
+
+    match shape {
+        EmbedShape::Rectangle => 1.0,
+        EmbedShape::Circle { radius } => {
+            let cx = w / 2.0;
+            let cy = h / 2.0;
+            let dist = ((px - cx).powi(2) + (py - cy).powi(2)).sqrt() - radius;
+            (0.5 - dist).clamp(0.0, 1.0)
+        }
+        EmbedShape::RoundedRect { radius } => {
+            let in_left = px < radius;
+            let in_right = px > w - radius;
+            let in_top = py < radius;
+            let in_bottom = py > h - radius;
+
+            if (in_left || in_right) && (in_top || in_bottom) {
+                let cx = if in_left { radius } else { w - radius };
+                let cy = if in_top { radius } else { h - radius };
+                let dist = ((px - cx).powi(2) + (py - cy).powi(2)).sqrt() - radius;
+                (0.5 - dist).clamp(0.0, 1.0)
+            } else {
+                1.0
+            }
+        }
+    }
+}
+
 fn embed_image(
     img: &mut image::ImageBuffer<Rgba<u8>, Vec<u8>>,
     infile: &PathBuf,
     start_x: u32,
     start_y: u32,
     width: Option<u32>,
+    radius: Option<&EmbedRadius>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("embed_image from file {infile:?}");
 
@@ -598,12 +715,44 @@ fn embed_image(
         )));
     }
 
-    for x in 0..logo.width() {
-        for y in 0..logo.height() {
-            let px = logo.get_pixel(x, y);
-            // use alpha channel as mask
-            if px[3] == 255 {
-                *img.get_pixel_mut(start_x + x, start_y + y) = logo.get_pixel(x, y);
+    let shape = resolve_embed_shape(radius, logo.width(), logo.height())?;
+
+    match shape {
+        EmbedShape::Rectangle => {
+            for x in 0..logo.width() {
+                for y in 0..logo.height() {
+                    let px = logo.get_pixel(x, y);
+                    // use alpha channel as mask
+                    if px[3] == 255 {
+                        *img.get_pixel_mut(start_x + x, start_y + y) = px;
+                    }
+                }
+            }
+        }
+        EmbedShape::RoundedRect { .. } | EmbedShape::Circle { .. } => {
+            for x in 0..logo.width() {
+                for y in 0..logo.height() {
+                    let coverage = shape_coverage(shape, x, y, logo.width(), logo.height());
+                    if coverage <= 0.0 {
+                        continue;
+                    }
+                    let src = logo.get_pixel(x, y);
+                    let alpha = (src[3] as f32 / 255.0) * coverage;
+                    if alpha <= 0.0 {
+                        continue;
+                    }
+                    let dst = img.get_pixel_mut(start_x + x, start_y + y);
+                    if alpha >= 1.0 {
+                        *dst = src;
+                    } else {
+                        *dst = Rgba([
+                            interpolate_channel(dst[0], src[0], alpha),
+                            interpolate_channel(dst[1], src[1], alpha),
+                            interpolate_channel(dst[2], src[2], alpha),
+                            interpolate_channel(dst[3], src[3], alpha),
+                        ]);
+                    }
+                }
             }
         }
     }

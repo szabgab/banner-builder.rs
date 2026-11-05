@@ -75,6 +75,12 @@ banbu site/examples/hello_world.yaml hello_world.png
 
 ![](examples/embed_jpg.png)
 
+## Embed image with rounded corners and circular shape
+
+{% include file="examples/embed_rounded.yaml" %}
+
+![](examples/embed_rounded.png)
+
 ## Resize embedded images
 
 {% include file="examples/resize_image.yaml" %}
