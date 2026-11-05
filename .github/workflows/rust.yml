@@ -49,6 +49,12 @@ jobs:
     - name: Clippy stop at any warning
       run: cargo clippy -- --deny warnings
 
+    - name: Install Tarpaulin
+      run: cargo install cargo-tarpaulin
+
+    - name: Run Tarpaulin
+      run: cargo tarpaulin --out Stdout
+
     - name: audit
       run: |
         cargo install cargo-audit
