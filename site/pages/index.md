@@ -69,6 +69,12 @@ banbu site/examples/hello_world.yaml hello_world.png
 
 ![](examples/embed_image.png)
 
+## Embed JPG image
+
+{% include file="examples/embed_jpg.yaml" %}
+
+![](examples/embed_jpg.png)
+
 ## Resize embedded images
 
 {% include file="examples/resize_image.yaml" %}

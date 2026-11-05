@@ -5,12 +5,13 @@ mod tests {
     use super::{run, run_with_rust_log};
     use std::path::PathBuf;
 
-    const CASES: [&str; 11] = [
+    const CASES: [&str; 12] = [
         "hello_world",
         "hello_world_with_alpha",
         "youtube_thumbnail_text_background",
         "wrap_text",
         "embed_image",
+        "embed_jpg",
         "lines",
         "lines_with_color",
         "lines_rtl",
