@@ -22,6 +22,7 @@ fn main() {
             text: "Hello World!".to_owned(),
             size: 24,
             background_color: "F0F0FF".to_owned(),
+            background: None,
             embed: vec![],
             lines: vec![],
         };
@@ -30,4 +31,3 @@ fn main() {
         banner_builder::draw_image(&banner, folder, path);
 }
 ```
-

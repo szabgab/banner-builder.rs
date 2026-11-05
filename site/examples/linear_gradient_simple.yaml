@@ -1,0 +1,11 @@
+---
+width: 1000
+height: 500
+text: Linear gradient
+background:
+  gradient:
+    type: linear
+    angle: 90
+    stops:
+      - "4A90E2"
+      - "50E3C2"

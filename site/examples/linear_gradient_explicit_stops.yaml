@@ -1,0 +1,15 @@
+---
+width: 1000
+height: 500
+text: Explicit stops
+background:
+  gradient:
+    type: linear
+    angle: 30
+    stops:
+      - color: "2E3192"
+        position: "0%"
+      - color: "1BFFFF"
+        position: "45%"
+      - color: "09FF00"
+        position: "100%"

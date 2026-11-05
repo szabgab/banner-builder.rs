@@ -5,7 +5,7 @@ mod tests {
     use super::{run, run_with_rust_log};
     use std::path::PathBuf;
 
-    const CASES: [&str; 8] = [
+    const CASES: [&str; 11] = [
         "hello_world",
         "hello_world_with_alpha",
         "youtube_thumbnail_text_background",
@@ -14,6 +14,9 @@ mod tests {
         "lines",
         "lines_with_color",
         "lines_rtl",
+        "linear_gradient_simple",
+        "linear_gradient_explicit_stops",
+        "linear_gradient_default_angle",
     ];
 
     #[test]
@@ -27,6 +30,7 @@ mod tests {
             text: "Hello World!".to_owned(),
             size: 24,
             background_color: "FFFFFF".to_owned(),
+            background: None,
             embed: vec![],
             lines: vec![],
         };

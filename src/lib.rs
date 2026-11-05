@@ -14,6 +14,47 @@ use std::error::Error;
 use std::path::Path;
 use std::path::PathBuf;
 
+/// Represent the background configuration of the banner
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Background {
+    /// Optional gradient background configuration
+    #[serde(default)]
+    pub gradient: Option<Gradient>,
+}
+
+/// Represent a gradient background
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Gradient {
+    /// Type of gradient. Currently only "linear" is supported.
+    #[serde(default = "default_gradient_type", rename = "type")]
+    pub gradient_type: String,
+
+    /// Angle in degrees for linear gradients.
+    #[serde(default = "default_gradient_angle")]
+    pub angle: f32,
+
+    /// Gradient stops represented by colors or explicit stop objects.
+    pub stops: Vec<GradientStopInput>,
+}
+
+/// Represent a gradient stop with either a color string or an object
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+pub enum GradientStopInput {
+    Color(String),
+    Stop {
+        color: String,
+        #[serde(default)]
+        position: Option<String>,
+    },
+}
+
+#[derive(Debug)]
+struct GradientStop {
+    color: Rgba<u8>,
+    position: f32,
+}
+
 /// Represent an image to be embedded in the banner
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Embed {
@@ -62,6 +103,10 @@ pub struct Banner {
     #[serde(default = "default_white")]
     pub background_color: String,
 
+    /// Optional structured background configuration
+    #[serde(default)]
+    pub background: Option<Background>,
+
     /// List of images to be embedded in the banner
     #[serde(default = "default_embed")]
     pub embed: Vec<Embed>,
@@ -77,6 +122,14 @@ fn default_false() -> bool {
 
 fn default_font_size() -> i32 {
     24
+}
+
+fn default_gradient_type() -> String {
+    "linear".to_string()
+}
+
+fn default_gradient_angle() -> f32 {
+    90.0
 }
 
 fn default_black() -> String {
@@ -123,7 +176,13 @@ pub fn draw_image(banner: &Banner, root: &Path, path: &PathBuf) -> bool {
         return false;
     }
 
-    let mut image = create_image(banner);
+    let mut image = match create_image(banner) {
+        Ok(image) => image,
+        Err(error) => {
+            eprintln!("Error creating background: {error}");
+            std::process::exit(1);
+        }
+    };
 
     for emb in &banner.embed {
         embed_image(&mut image, &root.join(&emb.file), emb.x, emb.y, emb.width).unwrap();
@@ -268,20 +327,232 @@ fn get_color(color: &str) -> image::Rgba<u8> {
     image::Rgba([red, green, blue, alpha])
 }
 
-fn create_image(banner: &Banner) -> RgbaImage {
-    log::info!("create_image");
+fn get_color_checked(color: &str) -> Result<image::Rgba<u8>, String> {
+    if color.len() != 6 && color.len() != 8 {
+        return Err(format!(
+            "Invalid color '{color}'. Expected 6 or 8 hex characters."
+        ));
+    }
 
-    let mut image = RgbaImage::new(banner.width, banner.height);
-    // set background color
-    let color = get_color(&banner.background_color);
+    if !color.chars().all(|ch| ch.is_ascii_hexdigit()) {
+        return Err(format!(
+            "Invalid color '{color}'. Expected only hex characters."
+        ));
+    }
 
-    for x in 0..banner.width {
-        for y in 0..banner.height {
-            *image.get_pixel_mut(x, y) = color;
+    Ok(get_color(color))
+}
+
+fn parse_percent(position: &str) -> Result<f32, String> {
+    if !position.ends_with('%') {
+        return Err(format!(
+            "Invalid gradient stop position '{position}'. Expected a percentage string like '25%'."
+        ));
+    }
+
+    let numeric = position.trim_end_matches('%');
+    let parsed = numeric.parse::<f32>().map_err(|error| {
+        format!("Invalid gradient stop position '{position}'. Could not parse number: {error}")
+    })?;
+    if !(0.0..=100.0).contains(&parsed) {
+        return Err(format!(
+            "Invalid gradient stop position '{position}'. Percentage must be between 0% and 100%."
+        ));
+    }
+
+    Ok(parsed / 100.0)
+}
+
+fn normalize_gradient_stops(stops: &[GradientStopInput]) -> Result<Vec<GradientStop>, String> {
+    if stops.len() < 2 {
+        return Err(format!(
+            "Gradient requires at least 2 stops, received {}.",
+            stops.len()
+        ));
+    }
+
+    let mut colors = Vec::with_capacity(stops.len());
+    let mut positions: Vec<Option<f32>> = Vec::with_capacity(stops.len());
+
+    for stop in stops {
+        match stop {
+            GradientStopInput::Color(color) => {
+                colors.push(get_color_checked(color)?);
+                positions.push(None);
+            }
+            GradientStopInput::Stop { color, position } => {
+                colors.push(get_color_checked(color)?);
+                positions.push(match position {
+                    Some(position) => Some(parse_percent(position)?),
+                    None => None,
+                });
+            }
         }
     }
 
-    image
+    if positions.iter().all(Option::is_none) {
+        let max_index = (positions.len() - 1) as f32;
+        for (index, position) in positions.iter_mut().enumerate() {
+            *position = Some(index as f32 / max_index);
+        }
+    } else {
+        if positions[0].is_none() {
+            positions[0] = Some(0.0);
+        }
+        let last_index = positions.len() - 1;
+        if positions[last_index].is_none() {
+            positions[last_index] = Some(1.0);
+        }
+
+        let mut index = 0;
+        while index < positions.len() {
+            if positions[index].is_none() {
+                let start = index - 1;
+                let mut end = index + 1;
+                while end < positions.len() && positions[end].is_none() {
+                    end += 1;
+                }
+
+                let start_pos = positions[start].unwrap();
+                let end_pos = positions[end].unwrap();
+                if end_pos < start_pos {
+                    return Err(format!(
+                        "Gradient stop positions must be non-decreasing. Found {}% before {}%.",
+                        end_pos * 100.0,
+                        start_pos * 100.0
+                    ));
+                }
+                let span = (end - start) as f32;
+                for (current, position) in
+                    positions.iter_mut().enumerate().take(end).skip(start + 1)
+                {
+                    let ratio = (current - start) as f32 / span;
+                    *position = Some(start_pos + (end_pos - start_pos) * ratio);
+                }
+                index = end;
+            } else {
+                index += 1;
+            }
+        }
+    }
+
+    let mut previous = -1.0_f32;
+    let mut normalized = Vec::with_capacity(colors.len());
+    for (index, color) in colors.into_iter().enumerate() {
+        let position = positions[index].unwrap();
+        if position < previous {
+            return Err(format!(
+                "Gradient stop positions must be non-decreasing. Position at index {index} is smaller than a previous position."
+            ));
+        }
+        previous = position;
+        normalized.push(GradientStop { color, position });
+    }
+
+    Ok(normalized)
+}
+
+fn interpolate_channel(start: u8, end: u8, ratio: f32) -> u8 {
+    ((start as f32) + ((end as f32) - (start as f32)) * ratio).round() as u8
+}
+
+fn sample_gradient_color(stops: &[GradientStop], t: f32) -> Rgba<u8> {
+    if t <= stops[0].position {
+        return stops[0].color;
+    }
+    if t >= stops[stops.len() - 1].position {
+        return stops[stops.len() - 1].color;
+    }
+
+    for pair in stops.windows(2) {
+        let start = &pair[0];
+        let end = &pair[1];
+        if t >= start.position && t <= end.position {
+            let span = end.position - start.position;
+            if span == 0.0 {
+                return end.color;
+            }
+            let ratio = (t - start.position) / span;
+            return Rgba([
+                interpolate_channel(start.color[0], end.color[0], ratio),
+                interpolate_channel(start.color[1], end.color[1], ratio),
+                interpolate_channel(start.color[2], end.color[2], ratio),
+                interpolate_channel(start.color[3], end.color[3], ratio),
+            ]);
+        }
+    }
+
+    stops[stops.len() - 1].color
+}
+
+fn draw_linear_gradient(
+    image: &mut RgbaImage,
+    width: u32,
+    height: u32,
+    angle_degrees: f32,
+    stops: &[GradientStop],
+) {
+    let radians = angle_degrees.to_radians();
+    let direction_x = radians.cos();
+    let direction_y = radians.sin();
+
+    let width_span = (width.saturating_sub(1)) as f32;
+    let height_span = (height.saturating_sub(1)) as f32;
+    let half_span = (direction_x.abs() * width_span + direction_y.abs() * height_span) / 2.0;
+    let denominator = if half_span > 0.0 { half_span } else { 1.0 };
+    let center_x = width_span / 2.0;
+    let center_y = height_span / 2.0;
+
+    for x in 0..width {
+        for y in 0..height {
+            let projected = ((x as f32 - center_x) * direction_x
+                + (y as f32 - center_y) * direction_y)
+                / denominator;
+            let t = (0.5 + projected).clamp(0.0, 1.0);
+            *image.get_pixel_mut(x, y) = sample_gradient_color(stops, t);
+        }
+    }
+}
+
+fn apply_gradient_background(
+    image: &mut RgbaImage,
+    width: u32,
+    height: u32,
+    gradient: &Gradient,
+) -> Result<(), String> {
+    if gradient.gradient_type != "linear" {
+        return Err(format!(
+            "Unsupported gradient type '{}'. Currently only 'linear' is supported.",
+            gradient.gradient_type
+        ));
+    }
+
+    let stops = normalize_gradient_stops(&gradient.stops)?;
+    draw_linear_gradient(image, width, height, gradient.angle, &stops);
+    Ok(())
+}
+
+fn create_image(banner: &Banner) -> Result<RgbaImage, String> {
+    log::info!("create_image");
+
+    let mut image = RgbaImage::new(banner.width, banner.height);
+    if let Some(gradient) = banner
+        .background
+        .as_ref()
+        .and_then(|background| background.gradient.as_ref())
+    {
+        apply_gradient_background(&mut image, banner.width, banner.height, gradient)?;
+    } else {
+        // set background color
+        let color = get_color(&banner.background_color);
+        for x in 0..banner.width {
+            for y in 0..banner.height {
+                *image.get_pixel_mut(x, y) = color;
+            }
+        }
+    }
+
+    Ok(image)
 }
 
 fn resize_image(img: DynamicImage, width: u32) -> DynamicImage {

@@ -1,0 +1,11 @@
+---
+width: 1000
+height: 500
+text: Default angle
+background:
+  gradient:
+    type: linear
+    stops:
+      - color: "F7971E"
+      - color: "FFD200"
+        position: "100%"
