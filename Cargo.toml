@@ -1,6 +1,6 @@
 [package]
 name = "banner-builder"
-version = "0.2.7"
+version = "0.2.8"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 description = "Simple image and banner generator for YouTube thumbnails, Meetups, social networks"
