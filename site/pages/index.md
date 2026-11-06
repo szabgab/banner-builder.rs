@@ -5,7 +5,7 @@ description: Generating images from a config file
 published: true
 ---
 
-The goal is to create a library that will make it easy to create various simple banners for YouTube, Meetup, and also for the Code Maven SSG.
+The goal is to create a library that will make it easy to generate various simple banners for YouTube, Meetup, for [Code Maven events](https://live.code-maven.com/) and for social media in general.
 
 ## Use as a command line tool:
 
