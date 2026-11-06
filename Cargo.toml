@@ -12,7 +12,12 @@ homepage = "https://banner-builder.code-maven.com/"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-exclude = ["/site"]
+exclude = [
+    "/site/*",
+    "!/site/pages",
+    "/site/pages/*",
+    "!/site/pages/configuration.md",
+]
 
 [dependencies]
 clap = { version = "4.6", features = ["derive"] }

@@ -57,6 +57,15 @@ mod tests {
     }
 
     #[test]
+    fn test_help() {
+        let (exit, stdout, stderr) = run_with_rust_log("target/debug/banbu --help");
+        assert_eq!(exit, 0);
+        assert!(stdout.contains("Usage: banbu <YAML_FILE> <IMAGE_FILE>"));
+        assert!(stdout.contains("Complete Annotated YAML Schema"));
+        assert_eq!(stderr, "");
+    }
+
+    #[test]
     fn test_banbu_missing() {
         let (exit, stdout, stderr) =
             run_with_rust_log("cargo run --bin banbu hello_world.yaml hello_world.png");

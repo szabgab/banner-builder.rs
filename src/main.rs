@@ -7,8 +7,15 @@ use clap::Parser;
 use std::error::Error;
 use std::path::PathBuf;
 
+const CONFIGURATION_DOCS: &str = include_str!("../site/pages/configuration.md");
+
 #[derive(Parser)]
-#[command(name = env!("CARGO_BIN_NAME"), version)]
+#[command(
+    name = env!("CARGO_BIN_NAME"),
+    version,
+    about,
+    after_help = CONFIGURATION_DOCS
+)]
 struct Cli {
     /// Path to the YAML configuration file
     yaml_file: PathBuf,
