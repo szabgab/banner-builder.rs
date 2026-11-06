@@ -1,3 +1,8 @@
+# v0.2.9 2026.11.06
+    - Color gradients.
+    - Embed transparent images.
+    - `--version` command line flag.
+
 # v0.2.6 2024.11.02
     - Add some more documentation.
     - Update the dependencies

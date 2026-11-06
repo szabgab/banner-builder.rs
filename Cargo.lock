@@ -190,7 +190,7 @@ dependencies = [
 
 [[package]]
 name = "banner-builder"
-version = "0.2.8"
+version = "0.2.9"
 dependencies = [
  "ab_glyph",
  "clap",
