@@ -20,16 +20,16 @@ cargo test
 
 ## Release and publish
 
-* Update version number in this file and in Cargo.toml to 0.2.9
+* Update version number in this file and in Cargo.toml to 0.2.10
 * Update the CHANGES.md file
 * `cargo fmt`
 * `cargo clippy`
 * `cargo test`
 * `git add .`
-* `git commit -m "prepare for 0.2.9"`
+* `git commit -m "prepare for 0.2.10"`
 * `git push`
 * `cargo publish`
-* `git tag -a v0.2.9 -m "publish version v0.2.9"
+* `git tag -a v0.2.10 -m "publish version v0.2.10"
 * `git push --tags`
 
 

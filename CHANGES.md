@@ -1,3 +1,6 @@
+# v0.2.10 2026.11.06
+    - Add `--help`
+
 # v0.2.9 2026.11.06
     - Color gradients.
     - Embed transparent images.
